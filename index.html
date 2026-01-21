@@ -3,72 +3,45 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>신학기 학교 규칙 퀴즈</title>
+    <title>학교 규칙 랜덤 퀴즈</title>
     <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;700&display=swap" rel="stylesheet">
     <style>
-        :root {
-            --primary-color: #4a90e2;
-            --success-color: #2ecc71;
-            --danger-color: #e74c3c;
-        }
-        * { margin: 0; padding: 0; box-sizing: border-box; }
-        body {
-            font-family: 'Noto Sans KR', sans-serif;
-            background: #f0f2f5;
-            display: flex; justify-content: center; padding: 20px;
-        }
-        .container {
-            max-width: 600px; width: 100%; background: white;
-            border-radius: 15px; overflow: hidden; box-shadow: 0 4px 15px rgba(0,0,0,0.1);
-        }
-        .header { background: var(--primary-color); color: white; padding: 25px; text-align: center; }
+        :root { --primary: #4a90e2; --success: #2ecc71; --danger: #e74c3c; }
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Noto Sans KR', sans-serif; }
+        body { background: #f0f2f5; display: flex; justify-content: center; padding: 20px; }
+        .container { max-width: 600px; width: 100%; background: white; border-radius: 15px; overflow: hidden; box-shadow: 0 4px 15px rgba(0,0,0,0.1); }
+        .header { background: var(--primary); color: white; padding: 25px; text-align: center; }
         .content { padding: 25px; }
         .input-group { margin-bottom: 15px; }
         .input-group label { display: block; margin-bottom: 5px; font-weight: bold; }
         .input-group input { width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 8px; }
-        
         .quiz-section { display: none; }
         .question-card { background: #fff; border: 1px solid #eee; padding: 20px; border-radius: 12px; margin-bottom: 20px; }
-        .option { 
-            display: block; padding: 12px; border: 2px solid #eee; border-radius: 8px; 
-            margin-top: 10px; cursor: pointer; transition: 0.2s;
-        }
-        .option:hover { background: #f8f9fa; }
-        .option.correct { background: #d4edda; border-color: var(--success-color); }
-        .option.wrong { background: #f8d7da; border-color: var(--danger-color); }
-        input[type="radio"] { margin-right: 10px; }
-
-        .btn { 
-            width: 100%; padding: 15px; background: var(--primary-color); color: white; 
-            border: none; border-radius: 8px; font-size: 16px; cursor: pointer; margin-top: 10px;
-        }
-        .btn:disabled { background: #ccc; }
+        .option { display: block; padding: 12px; border: 2px solid #eee; border-radius: 8px; margin-top: 10px; cursor: pointer; transition: 0.2s; }
+        .option.correct { background: #d4edda; border-color: var(--success); color: #155724; }
+        .option.wrong { background: #f8d7da; border-color: var(--danger); color: #721c24; }
+        .option.disabled { pointer-events: none; opacity: 0.7; }
+        .feedback-msg { margin-top: 10px; font-weight: bold; display: none; }
+        .btn { width: 100%; padding: 15px; background: var(--primary); color: white; border: none; border-radius: 8px; font-size: 16px; cursor: pointer; margin-top: 10px; }
+        .btn:disabled { background: #ccc; cursor: not-allowed; }
         .result-screen { display: none; text-align: center; padding: 40px 20px; }
-        .score-big { font-size: 60px; font-weight: bold; color: var(--primary-color); }
+        .score-big { font-size: 60px; font-weight: bold; color: var(--primary); }
     </style>
 </head>
 <body>
 
 <div class="container">
     <div class="header">
-        <h1>🏫 학교 규칙 퀴즈</h1>
-        <p>10문제를 모두 맞혀야 통과입니다!</p>
+        <h1>🏫 학교 규칙 랜덤 퀴즈</h1>
+        <p>10문제 모두 맞혀야 통과!</p>
     </div>
 
     <div class="content">
         <div id="infoSection">
-            <div class="input-group">
-                <label>학년</label><input type="number" id="grade" placeholder="예: 3">
-            </div>
-            <div class="input-group">
-                <label>반</label><input type="number" id="classNum" placeholder="예: 1">
-            </div>
-            <div class="input-group">
-                <label>번호</label><input type="number" id="number" placeholder="예: 15">
-            </div>
-            <div class="input-group">
-                <label>이름</label><input type="text" id="name" placeholder="이름 입력">
-            </div>
+            <div class="input-group"><label>학년</label><input type="number" id="grade" placeholder="예: 3"></div>
+            <div class="input-group"><label>반</label><input type="number" id="classNum" placeholder="예: 1"></div>
+            <div class="input-group"><label>번호</label><input type="number" id="number" placeholder="예: 15"></div>
+            <div class="input-group"><label>이름</label><input type="text" id="name" placeholder="이름 입력"></div>
             <button class="btn" onclick="startQuiz()">퀴즈 시작하기</button>
         </div>
 
@@ -87,10 +60,11 @@
 </div>
 
 <script>
-    const GAS_URL = "https://script.google.com/macros/s/AKfycbyp703okIZSTo1ONnnrms0WSs0ODyEQrBAmEpMVpIk1YS0_p_zjlPZGO4RCZtG2-7Qp0w/exec"; // 배포된 웹 앱 URL 붙여넣기
+    const GAS_URL = "https://script.google.com/macros/s/AKfycbxFcOp-kkaqIj4NYkW8IrvK0EX9sXp2X-EMzgmOrXmPtL8CJVBdwWliG61FGdOagvrrGQ/exec"; 
     
-    const questions = [
-        { q: "정해진 등교 시간은 언제인가요?", a: ["정해진 시간 엄수", "아무 때나", "친구 올 때", "수업 도중"], cor: 0 },
+    // 15문제 문제은행 (이 중 10개가 랜덤 선택됨)
+    const itemBank = [
+        { q: "정해진 등교 시간은 언제인가요?", a: ["시간 엄수", "아무 때나", "친구 올 때", "수업 도중"], cor: 0 },
         { q: "복도에서 올바른 보행 방법은?", a: ["전력 질주", "우측통행하며 걷기", "큰 소리로 노래", "장난치기"], cor: 1 },
         { q: "수업 중 화장실이 급할 때는?", a: ["몰래 나감", "참음", "손들고 허락받기", "소리 지름"], cor: 2 },
         { q: "친구 물건을 빌릴 때는?", a: ["몰래 씀", "먼저 허락 받기", "그냥 가져감", "나중에 말함"], cor: 1 },
@@ -99,16 +73,26 @@
         { q: "선생님 말씀하실 때 태도는?", a: ["딴짓", "경청 및 집중", "잠자기", "친구와 대화"], cor: 1 },
         { q: "친구가 실수했을 때?", a: ["놀림", "비웃음", "위로와 격려", "무시"], cor: 2 },
         { q: "하교 시 할 일은?", a: ["주변 정리 및 인사", "그냥 도망", "물건 두고 가기", "복도 질주"], cor: 0 },
-        { q: "교실 물건(공용) 사용 후?", a: ["제자리에 정리", "바닥에 둠", "가져감", "망가뜨림"], cor: 0 }
+        { q: "교실 물건 사용 후?", a: ["제자리에 정리", "바닥에 둠", "가져감", "망가뜨림"], cor: 0 },
+        { q: "실내화는 어디서 신나요?", a: ["운동장", "교실/복도", "집", "화장실 밖"], cor: 1 },
+        { q: "수업 시작종이 울리면?", a: ["계속 논다", "자리에 앉아 준비", "화장실 간다", "복도로 나간다"], cor: 1 },
+        { q: "급우와 다툼이 생기면?", a: ["먼저 때린다", "욕을 한다", "선생님께 도움 요청", "끝까지 싸운다"], cor: 2 },
+        { q: "교실에서 뛰면 안 되는 이유?", a: ["심심해서", "안전 사고 예방", "선생님이 싫어해서", "다이어트하려고"], cor: 1 },
+        { q: "도서실에서 지킬 예절은?", a: ["큰소리로 읽기", "조용히 독서하기", "책장에 낙서하기", "간식 먹기"], cor: 1 }
     ];
 
-    let userAnswers = new Array(questions.length).fill(null);
+    let selectedQuestions = [];
+    let userAnswers = [];
+    let score = 0;
 
     function startQuiz() {
         const fields = ['grade', 'classNum', 'number', 'name'];
-        for(let f of fields) {
-            if(!document.getElementById(f).value) return alert("정보를 모두 입력해주세요.");
-        }
+        for(let f of fields) if(!document.getElementById(f).value) return alert("정보를 모두 입력해주세요.");
+        
+        // 문제은행에서 10개 랜덤 추출
+        selectedQuestions = itemBank.sort(() => 0.5 - Math.random()).slice(0, 10);
+        userAnswers = new Array(10).fill(null);
+
         document.getElementById('infoSection').style.display = 'none';
         document.getElementById('quizSection').style.display = 'block';
         renderQuestions();
@@ -116,31 +100,48 @@
 
     function renderQuestions() {
         const container = document.getElementById('questionsContainer');
-        questions.forEach((item, idx) => {
-            let html = `<div class="question-card">
+        selectedQuestions.forEach((item, idx) => {
+            let html = `<div class="question-card" id="q-card-${idx}">
                 <p><strong>문제 ${idx+1}. ${item.q}</strong></p>`;
             item.a.forEach((opt, optIdx) => {
-                html += `<label class="option" id="label-${idx}-${optIdx}">
-                    <input type="radio" name="q${idx}" value="${optIdx}" onchange="selectAnswer(${idx}, ${optIdx})"> ${opt}
-                </label>`;
+                html += `<div class="option" id="opt-${idx}-${optIdx}" onclick="checkImmediate(${idx}, ${optIdx})">${opt}</div>`;
             });
-            html += `</div>`;
+            html += `<div id="fb-${idx}" class="feedback-msg"></div></div>`;
             container.innerHTML += html;
         });
     }
 
-    function selectAnswer(qIdx, optIdx) {
+    function checkImmediate(qIdx, optIdx) {
+        if (userAnswers[qIdx] !== null) return; // 이미 푼 문제는 패스
+
         userAnswers[qIdx] = optIdx;
-        const allAnswered = userAnswers.every(ans => ans !== null);
-        document.getElementById('submitBtn').disabled = !allAnswered;
+        const correctIdx = selectedQuestions[qIdx].cor;
+        const feedback = document.getElementById(`fb-${qIdx}`);
+        feedback.style.display = "block";
+
+        // 정답 오답 시각화
+        const options = document.querySelectorAll(`#q-card-${qIdx} .option`);
+        options.forEach((opt, i) => {
+            opt.classList.add('disabled');
+            if (i === correctIdx) opt.classList.add('correct');
+            else if (i === optIdx) opt.classList.add('wrong');
+        });
+
+        if (optIdx === correctIdx) {
+            score++;
+            feedback.innerHTML = "✅ 정답입니다!";
+            feedback.style.color = "var(--success)";
+        } else {
+            feedback.innerHTML = `❌ 틀렸습니다. 정답은 [${selectedQuestions[qIdx].a[correctIdx]}] 입니다.`;
+            feedback.style.color = "var(--danger)";
+        }
+
+        // 모든 문제를 풀었을 때만 제출 버튼 활성화
+        const answeredCount = userAnswers.filter(ans => ans !== null).length;
+        if (answeredCount === 10) document.getElementById('submitBtn').disabled = false;
     }
 
     async function finishQuiz() {
-        let score = 0;
-        userAnswers.forEach((ans, idx) => {
-            if(ans === questions[idx].cor) score++;
-        });
-
         const data = {
             grade: document.getElementById('grade').value,
             classNum: document.getElementById('classNum').value,
@@ -149,26 +150,29 @@
             score: score
         };
 
-        // 구글 시트 전송 (에러 발생해도 결과는 보여줌)
-        try {
-            fetch(GAS_URL, { method: 'POST', body: JSON.stringify(data) });
-        } catch(e) { console.log("전송 실패", e); }
+        const submitBtn = document.getElementById('submitBtn');
+        submitBtn.disabled = true;
+        submitBtn.textContent = "저장 중...";
 
-        showResult(score);
+        try {
+            await fetch(GAS_URL, { method: 'POST', mode: 'no-cors', body: JSON.stringify(data) });
+        } catch(e) { console.log(e); }
+
+        showResult();
     }
 
-    function showResult(score) {
+    function showResult() {
         document.getElementById('quizSection').style.display = 'none';
-        const rs = document.getElementById('resultSection');
-        rs.style.display = 'block';
-        document.getElementById('finalScore').textContent = score + "/10";
+        document.getElementById('resultSection').style.display = 'block';
+        window.scrollTo(0,0);
         
+        document.getElementById('finalScore').textContent = score + "/10";
         if(score === 10) {
-            document.getElementById('resultTitle').textContent = "🎉 축하합니다! 통과!";
-            document.getElementById('resultMsg').textContent = "학교 규칙을 완벽하게 숙지하셨군요!";
+            document.getElementById('resultTitle').textContent = "🎉 완벽해요! 통과!";
+            document.getElementById('resultMsg').textContent = "모든 규칙을 다 맞혔습니다. 훌륭합니다!";
         } else {
-            document.getElementById('resultTitle').textContent = "❌ 아쉽습니다. 불합격";
-            document.getElementById('resultMsg').textContent = "10문제를 모두 맞혀야 통과입니다. 다시 시도해보세요.";
+            document.getElementById('resultTitle').textContent = "❌ 아쉬워요! 불합격";
+            document.getElementById('resultMsg').textContent = "10점 만점을 받아야 통과입니다. 다시 시도하세요!";
         }
     }
 </script>
